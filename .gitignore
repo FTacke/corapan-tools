@@ -1,0 +1,26 @@
+# CO.RA.PAN-Tools .gitignore
+
+# Analyseergebnisse und Daten
+*.csv
+*.png
+*.docx
+
+# Ergebnisse-Ordner komplett ignorieren
+analysis/results/
+
+# Temporäre Dateien
+*.tmp
+*.temp
+*.log
+
+# Python Bytecode
+__pycache__/
+*.py[cod]
+
+# R-skript Zwischendateien (z.B. RData, Rhistory)
+*.RData
+*.Rhistory
+
+# Sonstige
+.DS_Store
+Thumbs.db
