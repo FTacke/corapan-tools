@@ -6,7 +6,7 @@
 *.docx
 
 # Ergebnisse-Ordner komplett ignorieren
-analysis/results/
+analysis/results/plots
 
 # Temporäre Dateien
 *.tmp
