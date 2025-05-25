@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2025 Felix Tacke
+
 # analysis_tenses_complete.R  --------------------------------------------------
 # Analyse Futuro & Pasado – drei Modi
 #   escrito/prensa – oral/lectura – oral/libre

@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2025 Felix Tacke
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
