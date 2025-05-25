@@ -1,7 +1,9 @@
 # CO.RA.PAN-Tools Übersicht
 
 Dieses Repository enthält Tools zur Datenverarbeitung und Analyse des CO.RA.PAN-Korpus.  
-Es umfasst ausschließlich Python- und R-Skripte, die für die Auswertung und Aufbereitung der linguistischen Daten entwickelt wurden.
+Die bearbeiteten Daten sind Transkriptionen gesprochener Sprache in Form von JSON-Dateien, die eine detaillierte Segmentierung in Sprechersegmente und Wörter mit linguistischen Annotationen (POS, Lemma, Morphologie) aufweisen. JSON als Format ermöglicht eine flexible, hierarchische und erweiterbare Struktur, die sich besonders gut eignet, um sprachliche Daten mit vielfältigen Informationen anzureichern und maschinell auszuwerten.
+
+Das Repository umfasst ausschließlich Python- und R-Skripte, die für die Aufbereitung, Verarbeitung und Auswertung der sprachlichen Daten entwickelt wurden.
 
 ## Inhalt
 
@@ -21,7 +23,7 @@ Das CO.RA.PAN-Projekt umfasst zwei Korpora:
   Öffentliches Beispielkorpus mit ausgewählten Audios und JSON-Daten.  
   DOI: https://doi.org/10.5281/zenodo.15378479
 
-Diese Korpora werden von der CO.RA.PAN-Webapp genutzt und sind nicht Teil dieses Repositories.
+Das *Full Corpus* wird von der CO.RA.PAN-Webapp genutzt und ist nicht Teil dieses Repository.
 
 ## Ziel
 
@@ -67,7 +69,8 @@ Das Repository ist als Ergänzung zur CO.RA.PAN-Webapp konzipiert, die die Daten
 
 ## Lizenz
 
-Die Lizenz entspricht der des Hauptprojekts CO.RA.PAN (sofern zutreffend).
+Dieses Repository ist unter der MIT-Lizenz freigegeben.  
+Siehe die Datei [LICENSE](LICENSE) für Details.
 
 ---
 
