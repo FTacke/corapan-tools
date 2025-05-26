@@ -5,37 +5,103 @@
 # -*- coding: utf-8 -*-
 
 """
-analysis_tenses.py
+analysis_tenses.py — CORAPAN-Projekt
+==========================================
 
-Dieses Skript analysiert alle annotierten JSON-Dateien im Ordner "grabaciones",
-die mit spaCy und einem Post-Processing für Futur- und Pasado-Formen versehen sind.
+**Ziel**  
+Quantitative Erfassung von Futur- und Pasado-Verbformen in allen
+JSON-Transkripten des CORAPAN-Korpus. Die Annotation wurde zuvor mit spaCy
+sowie einem Rule-Based-Post-Processing erzeugt; relevante Merkmale liegen in
+`word["morph"]`.
 
-Es werden sowohl Futurformen als auch Pasado-Formen ausgewertet:
+---------------------------------------------------------------------------
+1  Sprachliche Kategorien
+---------------------------------------------------------------------------
 
-Futurformen:
-- analytisches Futur in Präsens (Future_Type = "analyticalFuture")
-- analytisches Futur in Vergangenheit (Future_Type = "analyticalFuture_past", wird separat gezählt, aber nicht in Prozentrechnung einbezogen)
-- synthetisches Futur (Tense im Morph-Objekt = "Fut")
+⮞ **Futurformen**
 
-Pasado-Formen:
-- PerfectoCompuesto
-- PerfectoSimple
+| Codefeld | gezählt als | Bemerkung |
+|----------|-------------|-----------|
+| `Future_Type = "analyticalFuture"` | *analyticalFuture* | periphrastisches Futur Präsens |
+| `Future_Type = "analyticalFuture_past"` | *analyticalFuture_past* | **nur absolut**, nicht in Prozenten |
+| `'Fut' ∈ word["morph"]["Tense"]` | *simpleFuture* | synthetisches Futur |
 
-Die Auswertung erfolgt differenziert nach Sprechmodus:
-- habla_libre (lib-pm, lib-pf)
-- lectura (lec-pm, lec-pf)
-- pregrabado (pre-pm, pre-pf)
+⮞ **Pasadoformen**
 
-Für jede Datei und jeden Modus werden absolute Häufigkeiten und prozentuale Anteile berechnet.
-Die Ergebnisse werden in separaten CSV-Dateien gespeichert, getrennt für Futur und Pasado:
-- analysis_future_results_total.csv
-- analysis_future_results_libre.csv
-- analysis_future_results_lectura.csv
-- analysis_future_results_pre.csv
-- analysis_pasado_results_total.csv
-- analysis_pasado_results_libre.csv
-- analysis_pasado_results_lectura.csv
-- analysis_pasado_results_pre.csv
+| `Past_Tense_Type` (im Morph-Objekt) | gezählt als |
+|------------------------------------|-------------|
+| `PerfectoCompuesto`                | *compoundPast* |
+| `PerfectoSimple`                   | *simplePast*   |
+| alle anderen Past-Merkmale         | ignoriert     |
+
+---------------------------------------------------------------------------
+2  Sprechmodus-Buckets
+---------------------------------------------------------------------------
+
+Der Sprechername (`lib-pf`, `lec-pm`, usw.) wird mittels  
+`map_speaker_attributes()` in vier Attribute zerlegt :contentReference[oaicite:0]{index=0}.
+
+Für die Tenz-Analyse werden **drei Modi** getrennt ausgewertet:
+
+* *habla libre*   → `mode == "libre"`  
+* *lectura*       → `mode == "lectura"`  
+* *pregrabado*    → `mode == "pre"`
+
+(In diesen Buckets sind Professions- und Gender-Infos für diese Analyse
+irrelevant.)
+
+---------------------------------------------------------------------------
+3  Verarbeitungslogik
+---------------------------------------------------------------------------
+
+1. **Einlesen** aller Dateien aus `<BASE_WEB>/grabaciones/`.  
+2. **Country-Code** aus Dateinamen (`YYYY-MM-DD_COUNTRY_…`) via  
+   `extract_country_from_filename()`; unbekannt → \"UNK\" :contentReference[oaicite:1]{index=1}.  
+3. Durchlauf aller `segments`, dann aller `words`; Tenz-Typ wird
+   anhand der Tabellen oben klassifiziert :contentReference[oaicite:2]{index=2}.  
+4. **Zähler** pro Datei × Modus aktualisieren (`initialize_counters()`).  
+5. Nach Abschluss jeder Datei: absolute Counts + **Total** berechnen;
+   Prozentwerte = Count / Total × 100 (%-Zahl auf eine Nachkommastelle).  
+   *`analyticalFuture_past` wird **nicht** in die Futur-Prozentwerte
+   einbezogen.*  
+6. **CSV-Export** mit `write_results_csv()` – pro Land blockweise alle
+   Einzeldateien, dann eine Summenzeile „SUM <country>“ :contentReference[oaicite:3]{index=3}.
+
+---------------------------------------------------------------------------
+4  Ergebnisdateien (im Ordner *results*)  
+---------------------------------------------------------------------------
+
+| Futur | Pasado |
+|-------|--------|
+| `analysis_future_results_total.csv` | `analysis_pasado_results_total.csv` |
+| `analysis_future_results_libre.csv` | `analysis_pasado_results_libre.csv` |
+| `analysis_future_results_lectura.csv` | `analysis_pasado_results_lectura.csv` |
+| `analysis_future_results_pre.csv` | `analysis_pasado_results_pre.csv` |
+
+*Spalten (Beispiel Futur _total_):*
+
+country;filename;analyticalFuture;simpleFuture;TotalFuture;% analyticalFuture;% simpleFuture
+
+
+Die Summenzeile pro Land enthält aggregierte Counts und Anteile, so dass
+landesweite Verteilungen ohne Nachbearbeitung ersichtlich sind.
+
+---------------------------------------------------------------------------
+5  Filter & Validität
+---------------------------------------------------------------------------
+
+* Keine Mindestwortzahl je Bucket (alle Formen fließen ein).  
+* Sprecher-Professionalität wird **nicht** gefiltert; alle Kategorien werden
+  gezählt.  
+* Fehlende oder fehlerhafte `morph`-Objekte werden übersprungen.
+
+---------------------------------------------------------------------------
+6  Abhängigkeiten & Ausführung
+---------------------------------------------------------------------------
+
+* Python ≥ 3.8, Standardbibliotheken `os`, `json`, `csv`, `re`,
+  `collections.defaultdict`.  
+* Lizenz: MIT © 2025 Felix Tacke
 """
 
 import os
@@ -70,7 +136,7 @@ BASE_WEB = os.path.abspath(os.path.join(SCRIPT_DIR, "..", "..", "CO.RA.PAN-WEB")
 GRABACIONES_DIR = os.path.join(BASE_WEB, "grabaciones")
 
 # Ordner für Ergebnis-CSV-Dateien (neu)
-RESULTS_DIR = os.path.join(SCRIPT_DIR, "results")
+RESULTS_DIR = os.path.join(SCRIPT_DIR, "results_tenses")
 
 # Dateinamen für die Ergebnis-CSV-Dateien
 RESULTS_CSV_FUTURE_TOTAL = os.path.join(RESULTS_DIR, "analysis_future_results_total.csv")

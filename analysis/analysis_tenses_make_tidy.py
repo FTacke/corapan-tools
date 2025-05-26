@@ -35,7 +35,7 @@ DEFAULT_PATTERN = "analysis_*_results_*.csv"
 OUTFILE = "tenses_tidy.csv"
 
 
-def build_tidy(base_dir: Path | str = Path(__file__).parent / "results") -> Path:
+def build_tidy(base_dir: Path | str = Path(__file__).parent / "results_tenses") -> Path:
     """Scan *base_dir* for *_results_*.csv files and write a single tidy CSV, only using SUM rows."""
     base_dir = Path(base_dir).expanduser().resolve()
 
@@ -125,5 +125,5 @@ if __name__ == "__main__":
     if len(sys.argv) > 2:
         print("Usage: python analysis_tenses_make_tidy.py [BASE_DIR]")
         sys.exit(1)
-    base = Path(sys.argv[1]) if len(sys.argv) == 2 else Path(__file__).parent / "results"
+    base = Path(sys.argv[1]) if len(sys.argv) == 2 else Path(__file__).parent / "results_tenses"
     build_tidy(base)
