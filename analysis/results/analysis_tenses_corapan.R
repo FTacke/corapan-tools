@@ -85,6 +85,12 @@ raw$speech_type <- factor(raw$speech_type,
 included_countries <- c("ARG","BOL","ES-MAD","MEX","PAR","PER","RD")  # oder "all"
 excluded_countries <- c("ARG-Cba","ARG-Cht","ARG-SdE","ES-SEV","ES-CAN")
 
+suffix <- if ("all" %in% included_countries) {
+  "_all"
+} else {
+  paste0("_", paste(included_countries, collapse = "_"))
+}
+
 f <- raw %>%
   filter(str_detect(file, "^SUM")) %>%               # nur Summen-Zeilen
   filter(speech_type %in% speech_type_levels,
@@ -255,12 +261,6 @@ plot_variant_mode(summary, "future", "synthetic",
                   file.path(plots_dir, paste0("VariantBar_Synthetic_Futuro", suffix, ".png")))
 
 # -------------------------------  OUTPUT  ------------------------------------
-suffix <- if ("all" %in% included_countries) {
-  "_all"
-} else {
-  paste0("_", paste(included_countries, collapse = "_"))
-}
-
 plot_proportions(summary %>% filter(tense=="pasado"),
                  "pasado",
                  file.path(plots_dir, paste0("Proportion_Past", suffix, ".png")))

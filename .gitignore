@@ -17,10 +17,12 @@ analysis/results/plots
 __pycache__/
 *.py[cod]
 
-# R-skript Zwischendateien (z.B. RData, Rhistory)
+# R-skript Dateien (z.B. RData, Rhistory)
 *.RData
 *.Rhistory
+*.Rproj
 
 # Sonstige
 .DS_Store
 Thumbs.db
+.Rproj.user

@@ -81,6 +81,12 @@ speech_type_levels <- c("prensa", "lectura", "libre")
 included_countries <- c("ARG","BOL","ES-MAD","MEX","PAR","PER","RD")  # oder "all"
 excluded_countries <- c("ARG-Cba","ARG-Cht","ARG-SdE","ES-SEV","ES-CAN")
 
+suffix <- if ("all" %in% included_countries) {
+  "_all"
+} else {
+  paste0("_", paste(included_countries, collapse = "_"))
+}
+
 f <- raw %>%
   # alle „SUM…“-Zeilen (egal ob Leerzeichen oder Unterstrich)
   filter(str_detect(file, "^SUM")) %>%                                
@@ -248,12 +254,6 @@ plot_variant_mode <- function(data, tense_lab, variant_lab, out){
 }
 
 # ------------------------------- OUTPUT --------------------------------------
-suffix <- if ("all" %in% included_countries) {
-  "_all"
-} else {
-  paste0("_", paste(included_countries, collapse = "_"))
-}
-
 plot_proportions(summary %>% filter(tense=="pasado"),
                  "Pasado",
                  file.path(plots_dir, paste0("Proportion_Pasado", suffix, ".png")))
