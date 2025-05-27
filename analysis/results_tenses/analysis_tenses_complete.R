@@ -53,14 +53,12 @@ invisible(lapply(required_pkgs, library, character.only = TRUE))
 theme_set(theme_minimal(base_family = "Helvetica"))
 
 # --------------------------- PFADSETUP ---------------------------------------
-this_file   <- tryCatch(normalizePath(sys.frames()[[1]]$ofile),
-                        error = function(e) getwd())
-results_dir <- dirname(this_file)
-plots_dir   <- file.path(results_dir, "plots", "tenses_complete")
+# Dynamische Pfadauflösung ohne feste lokale Pfade
+plots_dir <- file.path("analysis", "results_tenses", "output", "tenses_complete")
 if (!dir.exists(plots_dir)) dir.create(plots_dir, recursive = TRUE)
 
-speech_path <- file.path(results_dir, "tenses_tidy.csv")
-press_path  <- file.path(results_dir, "tenses_prensa_tidy.csv")
+speech_path <- file.path(getwd(), "analysis", "results_tenses", "tenses_tidy.csv")
+press_path  <- file.path(getwd(), "analysis", "results_tenses", "tenses_prensa_tidy.csv")
 if (!file.exists(speech_path) || !file.exists(press_path))
   stop("CSV-Dateien nicht gefunden – prüfe Pfade!")
 
@@ -162,7 +160,7 @@ analytic <- summary %>%
                          "escrito/prensa" = "prensa",
                          "oral/lectura"   = "lectura",
                          "oral/libre"     = "libre")) %>%
-  select(country, tense, mode_raw, prop)
+  dplyr::select(country, tense, mode_raw, prop)
 
 delta_df <- analytic %>%
   pivot_wider(names_from = mode_raw,
@@ -177,7 +175,7 @@ tokens_wide <- summary %>%
                            "prensa" = "prensa",
                            "lectura" = "lectura",
                            "libre" = "libre")) %>%
-  select(country, tense, mode_raw, variant, tokens) %>%
+  dplyr::select(country, tense, mode_raw, variant, tokens) %>%
   pivot_wider(names_from = c(mode_raw, variant),
               values_from = tokens,
               names_sep   = "_",
@@ -197,8 +195,8 @@ effect_sizes <- tokens_wide %>%
                               lectura_analytical, lectura_synthetic),
                          \(a,b,c,d) fisher.test(matrix(c(a,b,c,d), 2, byrow = TRUE))$p.value)
   ) %>%
-  select(country, tense, odds_pl, fisher_pl) %>%
-  left_join(delta_df %>% select(country, tense, delta_pl),
+  dplyr::select(country, tense, odds_pl, fisher_pl) %>%
+  dplyr::left_join(delta_df %>% dplyr::select(country, tense, delta_pl),
             by = c("country","tense"))
 
 # --------------------------- PLOT-FUNKTIONEN ---------------------------------
@@ -265,10 +263,10 @@ plot_heatmap <- function(data, tense_label, out){
 plot_variant_mode <- function(data, tense_lab, variant_lab, out){
 
   # Map Tense-Label → Spaltenwert
-  tense_key <- c("Futuro" = "future", "Pasado" = "pasado")      # ⚠️  NEU
+  tense_key <- c("futuro" = "future", "pasado" = "pasado")      # ⚠️  NEU
 
   d <- data %>%
-    filter(tense == tense_key[[tense_lab]],                    # ⚠️  NEU
+    filter(tense == tense_key[[tolower(tense_lab)]],                    # ⚠️  NEU
            variant == variant_lab) %>%                         # unverändert
     mutate(label   = sprintf("%.1f%%", prop_percent),
            vjust   = ifelse(prop_percent > 95, 1.3, -0.25),

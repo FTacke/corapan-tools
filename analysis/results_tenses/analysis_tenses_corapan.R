@@ -53,13 +53,11 @@ invisible(lapply(required_pkgs, library, character.only = TRUE))
 theme_set(theme_minimal(base_family = "Helvetica"))
 
 # --------------------------- PFADSETUP ---------------------------------------
-this_file   <- tryCatch(normalizePath(sys.frames()[[1]]$ofile),
-                        error = function(e) getwd())
-results_dir <- dirname(this_file)
-plots_dir   <- file.path(results_dir, "plots", "tenses_corapan")
+# Dynamische Pfadauflösung ohne feste lokale Pfade
+plots_dir <- file.path("analysis", "results_tenses", "output", "tenses_corapan")
 if (!dir.exists(plots_dir)) dir.create(plots_dir, recursive = TRUE)
 
-speech_path <- file.path(results_dir, "tenses_tidy.csv")
+speech_path <- file.path(getwd(), "analysis", "results_tenses", "tenses_tidy.csv")
 if (!file.exists(speech_path))
   stop("tenses_tidy.csv nicht gefunden – prüfe Pfad!")
 
@@ -157,7 +155,7 @@ analytic <- summary %>%
   mutate(type_raw = recode(speech_type,
                            "oral/lectura" = "lectura",
                            "oral/libre"   = "libre")) %>%
-  select(country, tense, type_raw, prop)
+  dplyr::select(country, tense, type_raw, prop)
 
 delta_df <- analytic %>%
   pivot_wider(names_from = type_raw,
@@ -170,7 +168,7 @@ tokens_wide <- summary %>%
   mutate(type_raw = recode(speech_type,
                            "oral/lectura" = "lectura",
                            "oral/libre"   = "libre")) %>%
-  select(country, tense, type_raw, variant, tokens) %>%
+  dplyr::select(country, tense, type_raw, variant, tokens) %>%
   pivot_wider(names_from = c(type_raw, variant),
               values_from = tokens,
               names_sep   = "_",
@@ -189,8 +187,8 @@ effect_sizes <- tokens_wide %>%
                               lectura_analytical, lectura_synthetic),
                          \(a,b,c,d) fisher.test(matrix(c(a,b,c,d), 2, byrow = TRUE))$p.value)
   ) %>%
-  select(country, tense, odds_ll, fisher_ll) %>%
-  left_join(delta_df %>% select(country, tense, delta_ll),
+  dplyr::select(country, tense, odds_ll, fisher_ll) %>%
+  dplyr::left_join(delta_df %>% dplyr::select(country, tense, delta_ll),
             by = c("country","tense"))
 
 # ---------------------------  PLOT-FUNKTIONEN  -------------------------------
@@ -298,10 +296,10 @@ plot_proportions(summary %>% filter(tense=="future"),
 
 plot_delta(effect_sizes %>% filter(tense=="pasado"),
            "pasado",
-           file.path(plots_dir, paste0("Delta_Libre_vs_Lectura_Past", suffix, ".png")))
+           file.path(plots_dir, paste0("Delta_libre_vs_lectura_Past", suffix, ".png")))
 plot_delta(effect_sizes %>% filter(tense=="future"),
            "future",
-           file.path(plots_dir, paste0("Delta_Libre_vs_Lectura_Future", suffix, ".png")))
+           file.path(plots_dir, paste0("Delta_libre_vs_lectura_Future", suffix, ".png")))
 
 plot_heatmap(summary %>% filter(tense=="pasado"),
              "pasado",
@@ -312,5 +310,4 @@ plot_heatmap(summary %>% filter(tense=="future"),
 
 readr::write_csv(effect_sizes,
                  file.path(plots_dir,
-                           paste0("effect_sizes_livre_vs_lectura", suffix, ".csv")))
-
+                           paste0("effect_sizes_libre_vs_lectura", suffix, ".csv")))
