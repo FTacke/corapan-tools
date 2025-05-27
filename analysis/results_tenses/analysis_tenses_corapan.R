@@ -1,19 +1,49 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2025 Felix Tacke
 
-# analysis_tenses_corapan.R  ---------------------------------------------------
-# Analyse Futuro & Pasado  –  zwei Speech-Types
-#   oral/lectura   ·   oral/libre
-#   • proportionale Verteilungen
-#   • Δ-Plots  (Libre – Reading)
-#   • Fisher-Test  +  Odds Ratio
-# ----------------------------------------------------------------------------- 
-# Label-Konvention (englisch)
-#   speech_type  = oral/lectura | oral/libre
-#   Variant      = analytical | synthetic
-# ----------------------------------------------------------------------------- 
+# analysis_tenses_corapan.R — CORAPAN‑Projekt
+# =================================================
+#
+# Dieses Skript analysiert die Tempora Futuro & Pasado in zwei Speech-Types:
+# oral/lectura und oral/libre im CORAPAN-Korpus.
+#
+# -----------------------------------------------------------------------------
+# 1. Analyseinhalte
+# -----------------------------------------------------------------------------
+# * Proportionale Verteilungen der Varianten (analytical, synthetic)
+# * Δ-Plots (Libre – Reading)
+# * Fisher-Test und Odds Ratio zur Effektgröße
+#
+# -----------------------------------------------------------------------------
+# 2. Label-Konventionen (englisch)
+# -----------------------------------------------------------------------------
+# * speech_type: oral/lectura | oral/libre
+# * variant: analytical | synthetic
+#
+# -----------------------------------------------------------------------------
+# 3. Pfad- und Dateikonventionen
+# -----------------------------------------------------------------------------
+# * Ergebnisse und Plots werden im Unterordner 'plots/tenses_corapan' gespeichert
+# * Eingabedaten: 'tenses_tidy.csv'
+#
+# -----------------------------------------------------------------------------
+# 4. Benutzerdefinierte Länderauswahl
+# -----------------------------------------------------------------------------
+# * Steuerung der einbezogenen Länder über included_countries und excluded_countries
+#
+# -----------------------------------------------------------------------------
+# 5. Lizenz
+# -----------------------------------------------------------------------------
+# MIT (© 2025 Felix Tacke)
+#
+# -----------------------------------------------------------------------------
+# 6. Hinweise
+# -----------------------------------------------------------------------------
+# * Schriftart Helvetica für Plots
+# * Nur Summenzeilen (file beginnt mit "SUM") werden analysiert
+#
 
-# ---------------------------  PAKETE  ----------------------------------------
+# --------------------------- PAKETE ------------------------------------------
 required_pkgs <- c("tidyverse", "patchwork", "broom", "stringr", "stringi")
 need <- required_pkgs[!vapply(required_pkgs, requireNamespace,
                               quietly = TRUE, FUN.VALUE = logical(1))]
@@ -22,7 +52,7 @@ if (length(need))
 invisible(lapply(required_pkgs, library, character.only = TRUE))
 theme_set(theme_minimal(base_family = "Helvetica"))
 
-# ---------------------------  PFADSETUP  -------------------------------------
+# --------------------------- PFADSETUP ---------------------------------------
 this_file   <- tryCatch(normalizePath(sys.frames()[[1]]$ofile),
                         error = function(e) getwd())
 results_dir <- dirname(this_file)
@@ -33,7 +63,7 @@ speech_path <- file.path(results_dir, "tenses_tidy.csv")
 if (!file.exists(speech_path))
   stop("tenses_tidy.csv nicht gefunden – prüfe Pfad!")
 
-# ---------------------------  DATEN LADEN  -----------------------------------
+# --------------------------- DATEN LADEN -------------------------------------
 rename_map <- c(Country="country", filename="file", Filename="file",
                 Mode="mode", Tense="tense", Variant="variant",
                 Tokens="tokens", count="tokens")
@@ -47,7 +77,7 @@ read_and_clean <- function(path){
 
 raw <- read_and_clean(speech_path)
 
-# -------- VARIANT-LABELS & SPEECH_TYPE  (Akzente / Groß-Klein egal) ----------
+# ----------- VARIANT-LABELS & SPEECH_TYPE (Akzente/Leerzeichen egal) -----------
 raw <- raw %>%
   mutate(
     variant = stri_trans_general(variant, "Latin-ASCII") |> str_to_lower(),
@@ -56,9 +86,7 @@ raw <- raw %>%
   ) %>%
   rename(speech_type = mode)
 
-speech_type_levels <- c("lectura", "libre")          # interne Codes
-raw$speech_type <- factor(raw$speech_type,
-                          levels = speech_type_levels)
+speech_type_levels <- c("lectura", "libre")
 
 # ------------------------------------------------------------
 # Benutzerdefinierte Länderauswahl
@@ -285,3 +313,4 @@ plot_heatmap(summary %>% filter(tense=="future"),
 readr::write_csv(effect_sizes,
                  file.path(plots_dir,
                            paste0("effect_sizes_livre_vs_lectura", suffix, ".csv")))
+

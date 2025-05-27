@@ -1,13 +1,47 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2025 Felix Tacke
 
-# analysis_tenses_complete.R  --------------------------------------------------
-# Analyse Futuro & Pasado – drei Modi
-#   escrito/prensa – oral/lectura – oral/libre
-#   • proportionale Verteilungen
-#   • Δ-Plots (prensa–lectura)
-#   • Fisher-Test + Odds Ratio
-# ----------------------------------------------------------------------------- 
+# analysis_tenses_complete.R — CORAPAN‑Projekt
+# =================================================
+#
+# Dieses Skript analysiert die Tempora Futuro & Pasado in drei Modi:
+# escrito/prensa, oral/lectura und oral/libre im CORAPAN-Korpus.
+#
+# -----------------------------------------------------------------------------
+# 1. Analyseinhalte
+# -----------------------------------------------------------------------------
+# * Proportionale Verteilungen der Varianten (analytical, synthetic)
+# * Δ-Plots (prensa – lectura)
+# * Fisher-Test und Odds Ratio zur Effektgröße
+#
+# -----------------------------------------------------------------------------
+# 2. Label-Konventionen (englisch)
+# -----------------------------------------------------------------------------
+# * speech_type: escrito/prensa | oral/lectura | oral/libre
+# * variant: analytical | synthetic
+#
+# -----------------------------------------------------------------------------
+# 3. Pfad- und Dateikonventionen
+# -----------------------------------------------------------------------------
+# * Ergebnisse und Plots werden im Unterordner 'plots/tenses_complete' gespeichert
+# * Eingabedaten: 'tenses_tidy.csv' und 'tenses_prensa_tidy.csv'
+#
+# -----------------------------------------------------------------------------
+# 4. Benutzerdefinierte Länderauswahl
+# -----------------------------------------------------------------------------
+# * Steuerung der einbezogenen Länder über included_countries und excluded_countries
+#
+# -----------------------------------------------------------------------------
+# 5. Lizenz
+# -----------------------------------------------------------------------------
+# MIT (© 2025 Felix Tacke)
+#
+# -----------------------------------------------------------------------------
+# 6. Hinweise
+# -----------------------------------------------------------------------------
+# * Schriftart Helvetica für Plots
+# * Nur Summenzeilen (file beginnt mit "SUM") werden analysiert
+#
 
 # --------------------------- PAKETE ------------------------------------------
 required_pkgs <- c("tidyverse", "patchwork", "broom", "stringr", "stringi")
