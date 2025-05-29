@@ -57,6 +57,10 @@ theme_set(theme_minimal(base_family = "Helvetica"))
 plots_dir <- file.path("analysis", "results_tenses", "output", "tenses_corapan")
 if (!dir.exists(plots_dir)) dir.create(plots_dir, recursive = TRUE)
 
+# Arbeitsverzeichnis auf das Verzeichnis des Skripts setzen
+library(rstudioapi)
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+
 speech_path <- file.path(getwd(), "analysis", "results_tenses", "tenses_tidy.csv")
 if (!file.exists(speech_path))
   stop("tenses_tidy.csv nicht gefunden – prüfe Pfad!")

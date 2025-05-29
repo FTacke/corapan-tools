@@ -159,7 +159,7 @@ p_art <- art %>%
   labs(title = "Articulation rate – lectura vs. libre",
        x = "Words per minute", y = NULL, colour = "Mode") +
   theme_minimal(base_size = 12) +
-  coord_cartesian(xlim = c(120, 220))
+  coord_cartesian(xlim = c(120, 200))
 save_plot(p_art, "articulation_libre_lectura_plot.png")
 
 # ─ Einzel-Plot: Artikulation libre ───────────────────────────────
@@ -167,7 +167,7 @@ p_art_libre <- art %>%
   ggplot(aes(libre,
              fct_reorder(country, libre), fill = country == highlighted_country)) +
   geom_col(width = .6) +
-  scale_fill_manual(values = c("TRUE" = "grey", "FALSE" = "steelblue"), guide = "none") +
+  scale_fill_manual(values = c("TRUE" = "grey", "FALSE" = "steelblue")) +
   labs(title = "Articulation rate – libre",
        x = "Words per minute", y = NULL) +
   theme_minimal(base_size = 12)
@@ -179,7 +179,7 @@ p_art_lect <- art %>%
   ggplot(aes(lectura,
              fct_reorder(country, lectura), fill = country == highlighted_country)) +
   geom_col(width = .6) +
-  scale_fill_manual(values = c("TRUE" = "grey", "FALSE" = "firebrick"), guide = "none") +
+  scale_fill_manual(values = c("TRUE" = "grey", "FALSE" = "firebrick")) +
   labs(title = "Articulation rate – lectura",
        x = "Words per minute", y = NULL) +
   theme_minimal(base_size = 12) +
@@ -225,7 +225,7 @@ p_sp_libre <- sp %>%
   ggplot(aes(libre,
              fct_reorder(country, libre), fill = country == highlighted_country)) +
   geom_col(width = .6) +
-  scale_fill_manual(values = c("TRUE" = "grey", "FALSE" = "steelblue"), guide = "none") +
+  scale_fill_manual(values = c("TRUE" = "grey", "FALSE" = "steelblue")) +
   labs(title = "Speech rate – libre",
        x = "Words per minute", y = NULL) +
   theme_minimal(base_size = 12) +
@@ -238,7 +238,7 @@ p_sp_lect <- sp %>%
   ggplot(aes(lectura,
              fct_reorder(country, lectura), fill = country == highlighted_country)) +
   geom_col(width = .6) +
-  scale_fill_manual(values = c("TRUE" = "grey", "FALSE" = "steelblue"), guide = "none") +
+  scale_fill_manual(values = c("TRUE" = "grey", "FALSE" = "firebrick")) +
   labs(title = "Speech rate – lectura",
        x = "Words per minute", y = NULL) +
   theme_minimal(base_size = 12) +
